@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-exporter
+  namespace: monitoring
+spec:
+  ports:
+    - port: 9221
+      targetPort: 9221
+      protocol: TCP
+      name: http
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: prometheus-exporter
+  namespace: monitoring
+subsets:
+  - addresses:
+      - ip: 192.168.0.173       # <— actual IP of prometheus-exporter.home
+    ports:
+      - port: 9221
+        protocol: TCP
+        name: http
