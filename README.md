@@ -4,6 +4,7 @@
 
 - I have prometheus.home and grafana.home both configured to same ip (pihole static dns)
 - I have all the dependencies helm, go-task, envsubst installed
+- Proxmox Prometheus exporter is deployed and configured
 
 ## LIMITATIONS: 
 
