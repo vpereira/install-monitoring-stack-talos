@@ -1,0 +1,25 @@
+# values.yaml
+
+grafana:
+  enabled: true
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    annotations:
+      kubernetes.io/ingress.class: "nginx"
+    hosts:
+      - ${GRAFANA_HOST}
+    paths:
+      - /
+
+prometheus:
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    annotations:
+      kubernetes.io/ingress.class: "nginx"
+    hosts:
+      - ${PROMETHEUS_HOST}
+    paths:
+      - /
+

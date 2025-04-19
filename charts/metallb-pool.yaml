@@ -1,0 +1,23 @@
+# metallb-pool.yaml
+
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  namespace: metallb-system
+  name: home-pool
+spec:
+  # single‐host entries use /32
+  addresses:
+    - ${INGRESS_IP}/32
+
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  namespace: metallb-system
+  name: home-pool-advert
+spec:
+  # tell MetalLB to announce IPs from `home-pool`
+  ipAddressPools:
+    - home-pool
+
