@@ -1,21 +1,30 @@
-version: '3'
+version: "3"
 
 vars:
-  INGRESS_IP:        "{{ env `INGRESS_IP` }}"
-  PROMETHEUS_HOST:   "{{ env `PROMETHEUS_HOST` }}"
-  GRAFANA_HOST:      "{{ env `GRAFANA_HOST` }}"
+  INGRESS_IP: "{{ env `INGRESS_IP` }}"
+  PROMETHEUS_HOST: "{{ env `PROMETHEUS_HOST` }}"
+  GRAFANA_HOST: "{{ env `GRAFANA_HOST` }}"
 
 tasks:
-
   # I had some issues with metallb and talos. Solved by adding this labels
   # source: https://github.com/siderolabs/talos/issues/10291
   prepare-metallb-namespace:
     desc: "Prepare MetalLB namespace"
     cmds:
       - kubectl label namespace metallb-system \
-          pod-security.kubernetes.io/enforce=privileged \
-          pod-security.kubernetes.io/audit=privileged \
-          pod-security.kubernetes.io/warn=privileged --overwrite
+        pod-security.kubernetes.io/enforce=privileged \
+        pod-security.kubernetes.io/audit=privileged \
+        pod-security.kubernetes.io/warn=privileged --overwrite
+
+  # To be able to run node exporter on the hosts I had to
+  prepare-monitoring-namespace:
+    desc: "Prepare monitoring namespace"
+    cmds:
+      - kubectl label namespace monitoring \
+        pod-security.kubernetes.io/enforce=privileged \
+        pod-security.kubernetes.io/audit=privileged \
+        pod-security.kubernetes.io/warn=privileged
+
   deploy:
     desc: "Deploy MetalLB, Ingress‑NGINX, and Monitoring Stack"
     cmds:
@@ -32,7 +41,7 @@ tasks:
       # Ingress‑NGINX
       - kubectl create namespace ingress-nginx --dry-run=client -o yaml | kubectl apply -f -
       - INGRESS_IP={{.INGRESS_IP}} envsubst < charts/ingress-nginx-values.yaml | \
-          helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx --namespace ingress-nginx
+        helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx --namespace ingress-nginx
 
       # Monitoring stack
       - kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
@@ -41,7 +50,7 @@ tasks:
         GRAFANA_HOST={{.GRAFANA_HOST}} \
           envsubst < charts/kube-prometheus-stack-values.yaml > /tmp/monitoring-values.yaml
       - helm upgrade --install monitoring prometheus-community/kube-prometheus-stack \
-          --namespace monitoring -f /tmp/monitoring-values.yaml
+        --namespace monitoring -f /tmp/monitoring-values.yaml
 
   teardown:
     desc: "Tear down Monitoring Stack, Ingress, and MetalLB"

@@ -26,12 +26,17 @@ prometheus:
   # make sure the proxmox pve collector is installed
   prometheusSpec:
     additionalScrapeConfigs: |-
-     - job_name: "proxmox"
-       scrape_interval: 30s
-       metrics_path: "/pve"
-       params:
-         target: ["proxmox.home"]
-       static_configs:
-         # - targets: ["prometheus-exporter.home:9221"]
-         - targets: ["prometheus-exporter.monitoring.svc.cluster.local:9221"]
+      - job_name: "proxmox"
+        scrape_interval: 30s
+        metrics_path: "/pve"
+        params:
+          target: ["proxmox.home"]
+        static_configs:
+          # - targets: ["prometheus-exporter.home:9221"]
+          - targets: ["prometheus-exporter.monitoring.svc.cluster.local:9221"]
 
+serviceMonitor:
+  enabled: true
+  interval: 60s
+  additionalLabels:
+    release: monitoring
